@@ -2,7 +2,11 @@ name: Gerar APK
 
 on:
   push:
+    branches: [cartube]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -26,3 +30,15 @@ jobs:
         with:
           name: CarTube-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Renomear APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk CarTube.apk
+
+      - name: Publicar release (download direto no celular)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: cartube-v${{ github.run_number }}
+          name: CarTube v${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          body: "Baixe o CarTube.apk abaixo e instale no celular. Instruções no README da branch cartube."
+          files: CarTube.apk
